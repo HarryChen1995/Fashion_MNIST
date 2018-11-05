@@ -9,8 +9,8 @@ train_image, train_label, test_image, test_label=import_data.read_data()
 n_input=28
 n_class=10
 image_size=28
-max_epochs=12000
-Learning_rate=1e-3
+max_epochs=5000
+Learning_rate=1e-4
 batch_size=550
 regularization=1e-2
 drop_out=0.95
@@ -78,7 +78,7 @@ def CNN(X,weight,bias):
     tf.summary.histogram("wd1", weight['wd1'])
     tf.summary.histogram("bd1", bias['bd1'])
     
-    pred=tf.nn.softmax(tf.add(tf.matmul(hidden_layer,weight['w_out']),bias['b_out']),name="output")
+    pred=tf.add(tf.matmul(hidden_layer,weight['w_out']),bias['b_out'],name="output")
     add_l2_loss(weight['w_out'],bias['b_out'])
     tf.summary.histogram("w_out", weight['w_out'])
     tf.summary.histogram("b_out", bias['b_out'])
@@ -95,7 +95,7 @@ def main(argv=None):
     
     pred=CNN(X,weight,bias)
     loss=Loss(pred,Y)
-    train_op=tf.train.AdamOptimizer(learning_rate=Learning_rate).minimize(loss)
+    train_op=tf.train.RMSPropOptimizer(learning_rate=Learning_rate).minimize(loss)
     correct_prediction=tf.equal(tf.argmax(pred,1),tf.argmax(Y,1))
     accuracy=tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
     tf.summary.scalar("accuracy",accuracy)
